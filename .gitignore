@@ -1,0 +1,24 @@
+*.swp
+package-lock.json
+__pycache__
+.pytest_cache
+.venv
+*.egg-info
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+.env*
+/requirements
+/python
+/lambda_layers/python
+layer.zip
+/authorizer_layer
+.DS_Store
+main*.py
+run_test.sh
+*.xml
+*.png
+*.pdf
+mongo_*.sh
