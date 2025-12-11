@@ -9,7 +9,6 @@ class LambdaFunctions(Construct):
     sucursal_lambda: lambda_.Function
     #custom_authorizer_lambda: lambda_.Function
     datos_factura_lambda: lambda_.Function
-    tapetes_lambda: lambda_.Function
     folio_lambda: lambda_.Function
     genera_factura_lambda: lambda_.Function
     receptor_lambda: lambda_.Function
@@ -35,23 +34,12 @@ class LambdaFunctions(Construct):
             "CORS": env_vars.get("CORS"),
             "ENV": env_vars.get("ENV")
         }
-        env_tapetes = {
-            "MONGODB_URI": f"mongodb+srv://{env_vars.get("MONGO_USER")}:{env_vars.get("MONGO_PW")}@{env_vars.get("MONGO_HOST")}/{env_vars.get("MONGO_DB")}?retryWrites=true&w=majority",
-            "DB_NAME": env_vars.get("MONGO_DB"),
-            "TAPETES_API_URL": env_vars.get("TAPETES_API_URL"),
-            "TAPETES_USER_NAME": env_vars.get("TAPETES_USER_NAME"),
-            "TAPETES_PASSWORD": env_vars.get("TAPETES_PASSWORD"),
-            "CORS": env_vars.get("CORS"),
-            "ENV": env_vars.get("ENV")
-        }
+        
 
         env_fact ={
             "SW_USER_NAME": env_vars.get("SW_USER_NAME"),
             "SW_USER_PASSWORD": env_vars.get("SW_USER_PASSWORD"),
             "SW_URL": env_vars.get("SW_URL"),
-            "TAPETES_API_URL": env_vars.get("TAPETES_API_URL"),
-            "TAPETES_USER_NAME": env_vars.get("TAPETES_USER_NAME"),
-            "TAPETES_PASSWORD": env_vars.get("TAPETES_PASSWORD"),
             "MONGODB_URI": f"mongodb+srv://{env_vars.get("MONGO_USER")}:{env_vars.get("MONGO_PW")}@{env_vars.get("MONGO_HOST")}/{env_vars.get("MONGO_DB")}?retryWrites=true&w=majority",
             "DB_NAME":       env_vars.get("MONGO_DB"),
             "SMTP_HOST":     env_vars.get("SMTP_HOST"),
@@ -87,7 +75,7 @@ class LambdaFunctions(Construct):
         self.create_certificate_lambda(env, pymongo_layer)
         self.create_sucursal_lambda(env, pymongo_layer)
         self.create_datos_factura_lambda(env, pymongo_layer)
-        self.create_tapetes_lambda(env_tapetes, pymongo_layer)
+        
         self.create_folio_lambda(env, pymongo_layer)
         self.create_genera_factura_lambda(env_fact, pymongo_layer)
         self.create_receptor_lambda(env, pymongo_layer)
@@ -170,27 +158,6 @@ class LambdaFunctions(Construct):
             self, "DatosFacturaLambdaAlias",
             alias_name="Prod",
             version=self.datos_factura_lambda.current_version
-        )
-
-    def create_tapetes_lambda(self, env_tapetes: dict, pymongo_layer: lambda_.LayerVersion):
-        self.tapetes_lambda = lambda_.Function(
-            self, "TapetesLambda",
-            function_name="tapetes-lambda-oktano",
-            description="Lambda function to handle tapetes operations",
-            runtime=lambda_.Runtime.PYTHON_3_12,
-            handler="tapetes_handler.handler",
-            code=lambda_.Code.from_asset(OKTANO_LAMBDAS_PATH),
-            layers=[pymongo_layer],  # Add the layer to the Lambda function
-            environment=env_tapetes,
-            timeout=Duration.seconds(35),  # Optional: Set a timeout for the Lambda function
-            current_version_options=lambda_.VersionOptions(
-                removal_policy=RemovalPolicy.RETAIN
-            )
-        )
-        self.tapetes_alias = lambda_.Alias(
-            self, "TapetesLambdaAlias",
-            alias_name="Prod",
-            version=self.tapetes_lambda.current_version
         )
 
     def create_folio_lambda(self, env: dict, pymongo_layer: lambda_.LayerVersion):

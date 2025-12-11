@@ -18,7 +18,6 @@ class CertificateApiGateway(Construct):
         self.alias_certificate = alias.get("certificate_alias")
         self.alias_sucursal = alias.get("sucursal_alias")
         self.alias_datos_factura = alias.get("datos_factura_alias")
-        self.alias_tapetes = alias.get("tapetes_alias")
         self.alias_folio = alias.get("folio_alias")
         self.alias_genera_factura = alias.get("genera_factura_alias")
         self.alias_receptor = alias.get("receptor_alias")
@@ -83,10 +82,6 @@ class CertificateApiGateway(Construct):
         # Datos Factura resources
         datos_factura = datos_factura_apigw.root.add_resource("datosfactura")
 
-        #Tapetes resource
-        tapetes_resource = api.root.add_resource("tapetes")
-        tapetes_id_resource = tapetes_resource.add_resource("{ticket}")
-
         #Folio resource
         folio_resource = api.root.add_resource("folio")
         folio_sucursal_resource = folio_resource.add_resource("{sucursal}")
@@ -129,12 +124,7 @@ class CertificateApiGateway(Construct):
         datos_factura_integration = apigw.LambdaIntegration(
             self.alias_datos_factura,
             request_templates={APPLICATION_JSON: '{ "statusCode": "200" }'}
-        )
-
-        tapetes_integration = apigw.LambdaIntegration(
-            self.alias_tapetes,
-            request_templates={APPLICATION_JSON: '{ "statusCode": "200" }'}
-        )   
+        ) 
 
         folio_integration = apigw.LambdaIntegration(
             self.alias_folio,
@@ -190,9 +180,6 @@ class CertificateApiGateway(Construct):
 
         # Datos Factura methods, no lleva authorizer
         datos_factura.add_method("GET", datos_factura_integration)
-
-        #Datos Tapetes methods, obtiene el ticket de venta, no lleva authorizer
-        tapetes_id_resource.add_method("GET", tapetes_integration)
 
         #Datos Folio methods 
         folio_resource.add_method("POST", folio_integration)

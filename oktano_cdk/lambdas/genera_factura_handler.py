@@ -18,9 +18,6 @@ SW_USER_NAME = os.getenv("SW_USER_NAME")
 SW_USER_PASSWORD = os.getenv("SW_USER_PASSWORD")
 SW_URL = os.getenv("SW_URL")
 ENVIRONMENT = os.getenv("ENV")
-USER_NAME_CLIENT = os.getenv("TAPETES_USER_NAME")
-PASSWORD_CLIENT = os.getenv("TAPETES_PASSWORD")
-TAPETES_API_URL = os.getenv("TAPETES_API_URL")
 FACTURAPI_URL = os.getenv("FACTURAPI_URL")
 FACTURAPI_TOKEN = os.getenv("FACTURAPI_TOKEN")
 
@@ -117,47 +114,8 @@ def handler(event, context):
             #5. Formatear el XML para que se retornarlo al endpoint del cliente
             dom = xml.dom.minidom.parseString(factura_generada["data"]["cfdi"])
             pretty_xml = dom.toprettyxml(indent="  ")
-            xml_escaped = pretty_xml.replace('"',r'\"')
-            print(f"Environment: {ENVIRONMENT}")
-            if(ENVIRONMENT == 'Prod'):
-            #5.1 Obtener el token del endpoint del cliente (Tapetes)
-                form_data = {
-                    "username": USER_NAME_CLIENT,
-                    "password": PASSWORD_CLIENT
-                }
-                response = requests.post(
-                    f"{TAPETES_API_URL}token", 
-                    headers=headersEndpoint, 
-                    data=form_data
-                )
-                token = response.json().get("access_token")
-            #5.2 Enviar la factura generada al endpoint del cliente (Tapetes)
-                body_envio_endpoint=json.dumps({
-                                "erfc"     : timbrado['Emisor']['Rfc'],
-                                "sucursal" : sucursal,
-                                "serie"    : timbrado['Serie'],
-                                "folio"    : str(timbrado['Folio']),
-                                "subtotal" : str(timbrado['SubTotal']),
-                                "impuesto" : str(timbrado['Impuestos']['TotalImpuestosTrasladados']),
-                                "total"    : str(timbrado['Total']),
-                                "uuid"     : factura_generada["data"]["uuid"],
-                                "rrfc"     : timbrado['Receptor']['Rfc'],
-                                "rnombre"  : timbrado['Receptor']['Nombre'],
-                                "ruso"     : timbrado['Receptor']['UsoCFDI'],
-                                "rregimen" : timbrado['Receptor']['RegimenFiscalReceptor'],
-                                "rcp"      : timbrado['Receptor']['DomicilioFiscalReceptor'],
-                                "tickets"  : ticket,
-                                "fecha"    : factura_generada.get("data").get("fechaTimbrado"),
-                                "servicio" : "ChipoSoft Corp.",
-                                "xml_cfdi" : pretty_xml, 
-                                "xml_cfdi_b64" : base64.b64encode(xml_escaped.encode()).decode()
-                                })
-
-                requests.post(
-                    f"{TAPETES_API_URL}recibefacturas/",
-                    headers={"Accept": APPLICATION_JSON, "Content-Type": APPLICATION_JSON, "Authorization": f"Bearer {token}"},
-                    data=body_envio_endpoint
-                )
+            #xml_escaped = pretty_xml.replace('"',r'\"')
+                
 
             #6. Guardar la factura generada en la base de datos
             factura_generada["data"]["sucursal"]=sucursal

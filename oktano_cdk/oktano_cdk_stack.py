@@ -27,7 +27,6 @@ class OktanoCdkStack(Stack):
             "certificate_alias": self.lambda_functions.certificate_alias,
             "sucursal_alias": self.lambda_functions.sucursal_alias,
             "datos_factura_alias": self.lambda_functions.datos_factura_alias,
-            "tapetes_alias": self.lambda_functions.tapetes_alias,
             "folio_alias": self.lambda_functions.folio_alias,
             "genera_factura_alias": self.lambda_functions.genera_factura_alias,
             "receptor_alias": self.lambda_functions.receptor_alias,
