@@ -1,18 +1,16 @@
 #!/bin/bash
 
-# Script para ejecutar comandos CDK con la configuración personalizada de dependencias
-# Configurar PYTHONPATH para incluir la carpeta requirements
-
-export PYTHONPATH="/Users/macbookpro/git/oktano-cdk/requirements:$PYTHONPATH"
+# Script para ejecutar comandos CDK en el entorno de producción
 
 # Activar entorno virtual si existe
 if [ -d ".venv" ]; then
     source .venv/bin/activate
     echo "✅ Entorno virtual activado"
+else
+    echo "⚠️  Entorno virtual no encontrado. Crea uno con: python -m venv .venv"
+    exit 1
 fi
 
-echo "✅ PYTHONPATH configurado para usar ./requirements/"
-echo "📁 PYTHONPATH actual: $PYTHONPATH"
 echo ""
 
 # Ejecutar el comando CDK pasado como parámetro
