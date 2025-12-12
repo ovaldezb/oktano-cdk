@@ -132,9 +132,9 @@ def handler(event, context):
             pdf_bytes = CFDIPDF_FPDF_Generator(cfdi, qr_code, cadena_original_sat, ticket, fecha_venta,direccion,empresa,regimen_fiscal_emisor, regimen_fiscal_receptor).generate_pdf()
             pdf_b64 = base64.b64encode(pdf_bytes).decode('utf-8')
             #8. Envia correo
-            if email_receptor and "@" in email_receptor:
-                email = EmailSender()
-                result = email.send_invoice(
+            #if email_receptor and "@" in email_receptor:
+            #    email = EmailSender()
+            """result = email.send_invoice(
                     recipient_email=email_receptor,
                     pdf_base64=pdf_b64,
                     cfdi_xml=pretty_xml,
@@ -142,8 +142,8 @@ def handler(event, context):
                     xml_filename=f"{uuid}.xml",
                     subject="Factura del ticket " + ticket,
                     body_text="Se adjunto factura en PDF y XML para el ticket " + ticket+" \n Agradecemos su preferencia"
-                )
-                print(f"Email sent: {result}")
+                )"""                
+                #print(f"Email sent: {result}")
             #9. Retornar la factura generada a la página
             bitacora_collection.insert_one({"ticket": ticket, "rfc": timbrado['Receptor']['Rfc'], "rfcEmisor": timbrado['Emisor']['Rfc'], "email": email_receptor, "mensaje": "Factura generada exitosamente" + " Serie:"+ timbrado['Serie']+ " folio:" + str(timbrado['Folio']),"status": "exito", "traceback": '', "timestamp": (datetime.now(timezone.utc)- timedelta(hours=6)).isoformat()})
             return {
